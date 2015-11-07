@@ -1,10 +1,15 @@
 // Base application from the starter tutorials related to Express
 // http://expressjs.com/starter/installing.html
 //
+// Styling and tutorial from http://www.clock.co.uk/blog/a-simple-website-in-nodejs-with-express-jade-and-stylus
+//
+// Run via   DEBUG=myapp:* npm start  
 
 
 
-var express = require('express');
+var express = require('express')
+  , stylus = require('stylus')
+  , nib = require('nib');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -15,6 +20,11 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 
 var app = express();
+function compile(str, path) {
+  return stylus(str)
+    .set('filename', path)
+    .use(nib())
+};
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -23,6 +33,11 @@ app.set('view engine', 'jade');
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
+app.use(stylus.middleware(
+  { src: __dirname + '/public'
+  , compile: compile
+  }
+))
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
